@@ -1,4 +1,53 @@
-﻿@{
+﻿@model IEnumerable<small_todo_application.Models.TaskList>
+@{
     Layout = "_UserLayout";
+ 
 }
-<h1>Hello to User page </h1>
+
+<style>
+    .task-list {
+        display: grid;
+        gap: 1rem;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    }
+
+    .task-card {
+        background: white;
+        border-radius: 8px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+        .task-card h3 {
+            margin-top: 0;
+            color: #333;
+        }
+
+    .task-meta {
+        font-size: 0.9rem;
+        color: #666;
+        margin-top: 1rem;
+    }
+</style>
+
+<h2>My Tasks</h2>
+
+@if (Model.Any())
+{
+    <div class="task-list">
+        @foreach (var task in Model)
+        {
+            <div class="task-card">
+                <h3>@task.Title</h3>
+                <p>@task.Description</p>
+                <div class="task-meta">
+                    <span>Assigned on: @task.CreatedAt.ToString("d")</span>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="alert alert-info">You don't have any tasks assigned yet.</div>
+}

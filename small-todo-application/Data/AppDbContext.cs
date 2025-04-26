@@ -10,5 +10,9 @@ namespace small_todo_application.Data
 
 
 		public DbSet<Register> Registers { get; set; }
+		public DbSet<TaskList> TaskList { get; set; }
+
+		// In AppDbContext.cs
+	
 	}
 }

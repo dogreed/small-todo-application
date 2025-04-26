@@ -75,10 +75,13 @@ namespace small_todo_application.Controllers
 					{
 						var claims = new List<Claim>
 				{
+					
 					new Claim(ClaimTypes.Name, user.Name),
 					new Claim(ClaimTypes.Email, user.Email),
+					new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
 					new Claim(ClaimTypes.Role, user.Role)
 				};
+						// 👈 add this!
 
 						var identity = new ClaimsIdentity(claims, "MyCookieAuth"); //calling from program.cs file
 						var principal = new ClaimsPrincipal(identity);

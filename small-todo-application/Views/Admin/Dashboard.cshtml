@@ -1,5 +1,72 @@
 ﻿
+
+@model List<small_todo_application.Models.Register>
 @{
-    Layout = "_AdminLayout";
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
-<h1>Heloo, Welcomt to admin pannel</h1>
+
+
+<table border="1" cellpadding="10">
+    <thead>
+        <tr>
+            <th>Full Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            int? editId = ViewBag.EditId as int?;
+            // Define your roles (you might want to get these from a database or config)
+            var roles = new List<string> { "user", "admin", };
+        }
+
+        @foreach (var register in Model)
+        {
+            <tr>
+                @if (editId == register.Id)
+                {
+                    <form asp-action="Edit" method="post">
+                    <td>
+                        <input type="hidden" name="Id" value="@register.Id" />
+                            @register.Name
+                    </td>
+                    <td>
+                            @register.Email
+                    </td>
+                    <td>
+                        <select name="role" class="form-control">
+                                @foreach (var role in roles)
+                                {
+                                <option value="@role" selected="@(role == register.Role)">@role</option>
+                                }
+                        </select>
+                    </td>
+                    <td>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                        <a asp-action="Dashboard" class="btn btn-secondary">Cancel</a>
+                    </td>
+                    </form>
+                }
+                else
+                {
+                    <td>@register.Name</td>
+                    <td>@register.Email</td>
+                    <td>@register.Role</td>
+                    <td>
+                        <a asp-action="Dashboard" asp-route-editId="@register.Id" class="btn btn-info">Edit</a>
+
+                        <form asp-action="Delete" asp-route-id="@register.Id" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-danger">
+                                Delete
+                            </button>
+                        </form>
+                    </td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+
