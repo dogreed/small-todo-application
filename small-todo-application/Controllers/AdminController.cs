@@ -20,7 +20,7 @@ namespace small_todo_application.Controllers
 		{
 			_context = context;
 		}
-
+		//.............Here is For admin dashboard..............
 		public IActionResult Dashboard(int? editId = null)
 		{
 			var registers = _context.Registers.ToList();
@@ -64,7 +64,7 @@ namespace small_todo_application.Controllers
 
 		}
 
-		
+		//.............Here is For admin AssignTask..............
 
 		[HttpGet]
 		public async Task<IActionResult> AssignTask()
@@ -117,9 +117,71 @@ namespace small_todo_application.Controllers
 			return View(model);
 		}
 
+		//Now here is the code to edit, delete task in differnt page,?
+
+		// Show all assigned tasks
+		[HttpGet]
+		public async Task<IActionResult> TaskList()
+		{
+			var tasks = await _context.TaskList.Include(t => t.AssignedToUser).ToListAsync();
+			return View(tasks);
+		}
+
+		// Edit Task (GET)
+		[HttpGet]
+		public async Task<IActionResult> EditTask(int id)
+		{
+			var task = await _context.TaskList.FindAsync(id);
+			if (task == null) return NotFound();
+
+			var viewModel = new AssignTaskViewModel
+			{
+				Task = task,
+				AssignableUsers = await _context.Registers.ToListAsync()
+			};
+
+			return View(viewModel);
+		}
+
+		// Edit Task (POST)
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> EditTask(AssignTaskViewModel model)
+		{
+			if (ModelState.IsValid)
+			{
+				var task = await _context.TaskList.FindAsync(model.Task.Id);
+				if (task == null) return NotFound();
+
+				task.Title = model.Task.Title;
+				task.Description = model.Task.Description;
+				task.AssignedToUserId = model.Task.AssignedToUserId;
+
+				await _context.SaveChangesAsync();
+				TempData["SuccessMessage"] = "Task updated successfully!";
+				return RedirectToAction("TaskList");
+			}
+
+			model.AssignableUsers = await _context.Registers.ToListAsync();
+			return View(model);
+		}
+
+		// Delete Task
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> DeleteTask(int id)
+		{
+			var task = await _context.TaskList.FindAsync(id);
+			if (task != null)
+			{
+				_context.TaskList.Remove(task);
+				await _context.SaveChangesAsync();
+			}
+			return RedirectToAction("TaskList");
+		}
+
+
 	}
-
-
 
 }
 

@@ -38,5 +38,25 @@ namespace small_todo_application.Controllers
 			return View(myTasks);
 
 		}
+
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> UpdateStatus(int taskId, string status)
+		{
+			var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+			var task = await _context.TaskList.FirstOrDefaultAsync(t => t.Id == taskId && t.AssignedToUserId == userId);
+			if (task == null)
+			{
+				return NotFound();
+			}
+
+			task.Status = status;
+			await _context.SaveChangesAsync();
+
+			TempData["SuccessMessage"] = "Task status updated!";
+			return RedirectToAction("ViewTask");
+		}
+
 	}
 }

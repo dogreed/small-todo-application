@@ -40,9 +40,21 @@
             <div class="task-card">
                 <h3>@task.Title</h3>
                 <p>@task.Description</p>
+
                 <div class="task-meta">
-                    <span>Assigned on: @task.CreatedAt.ToString("d")</span>
+                    <span>Assigned on: @task.CreatedAt.ToString("d")</span><br />
+                    <span>Status: @task.Status</span>
                 </div>
+
+                <form asp-action="UpdateStatus" method="post" style="margin-top: 10px;">
+                    <input type="hidden" name="taskId" value="@task.Id" />
+                    <select name="status" class="form-control" style="margin-bottom:10px;">
+                        <option value="Not Started" selected="@(task.Status == "Not Started" ? "selected" : null)">Not Started</option>
+                        <option value="Pending" selected="@(task.Status == "Pending" ? "selected" : null)">Pending</option>
+                        <option value="Completed" selected="@(task.Status == "Completed" ? "selected" : null)">Completed</option>
+                    </select>
+                    <button type="submit" class="btn btn-sm btn-primary">Update Status</button>
+                </form>
             </div>
         }
     </div>

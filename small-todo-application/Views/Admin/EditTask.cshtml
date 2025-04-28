@@ -1,0 +1,44 @@
+﻿@model small_todo_application.ViewModel.AssignTaskViewModel
+
+@{
+    ViewData["Title"] = "EditTask";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+
+<h2>Edit Task</h2>
+
+<form asp-action="EditTask" method="post">
+    <input type="hidden" asp-antiforgery="true" />
+    <input type="hidden" asp-for="Task.Id" />
+
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <div class="form-group">
+        <label asp-for="Task.Title"></label>
+        <input asp-for="Task.Title" class="form-control" />
+        <span asp-validation-for="Task.Title" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Task.Description"></label>
+        <textarea asp-for="Task.Description" class="form-control"></textarea>
+        <span asp-validation-for="Task.Description" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Task.AssignedToUserId">Assign To User</label>
+
+        <select asp-for="Task.AssignedToUserId" asp-items="Model.UserOptions" class="form-control" required></select>
+
+        <span asp-validation-for="Task.AssignedToUserId" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success">Save Changes</button>
+    <a asp-action="TaskList" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+

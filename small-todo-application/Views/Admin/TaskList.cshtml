@@ -1,0 +1,54 @@
+﻿
+
+@model IEnumerable<small_todo_application.Models.TaskList>
+
+@{
+    Layout = "_AdminLayout";
+}
+
+<h2>Assigned Tasks</h2>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["SuccessMessage"]
+    </div>
+}
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Assigned To</th>
+            <th>Created At</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var task in Model)
+        {
+            <tr>
+                <td>@task.Title</td>
+                <td>@task.Description</td>
+                <td>@(task.AssignedToUser?.Name ?? "Unknown")</td>
+               
+                <td>@task.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td>
+                <td>@task.Status</td>
+                <td>
+                    <a asp-action="EditTask" asp-route-id="@task.Id" class="btn btn-sm btn-warning">Edit</a>
+
+                    <form asp-action="DeleteTask" asp-route-id="@task.Id" method="post" style="display:inline-block;">
+                        <input type="hidden" asp-antiforgery="true" />
+                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="AssignTask" class="btn btn-primary">Assign New Task</a>
+
+

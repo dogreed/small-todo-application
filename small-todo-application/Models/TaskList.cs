@@ -21,5 +21,8 @@ namespace small_todo_application.Models
 		public Register? AssignedToUser { get; set; }
 
 		public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+		public string Status { get; set; } = "Not Started"; // Default value
+
 	}
 }
