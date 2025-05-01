@@ -20,7 +20,7 @@
         @{
             int? editId = ViewBag.EditId as int?;
             // Define your roles (you might want to get these from a database or config)
-            var roles = new List<string> { "user", "admin", };
+            var roles = new List<string> { "User", "Admin", "Manager" };
         }
 
         @foreach (var register in Model)

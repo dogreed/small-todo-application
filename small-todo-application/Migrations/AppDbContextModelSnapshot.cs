@@ -71,6 +71,9 @@ namespace small_todo_application.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("CreatedByUserId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -87,6 +90,8 @@ namespace small_todo_application.Migrations
 
                     b.HasIndex("AssignedToUserId");
 
+                    b.HasIndex("CreatedByUserId");
+
                     b.ToTable("TaskList");
                 });
 
@@ -98,7 +103,15 @@ namespace small_todo_application.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("small_todo_application.Models.Register", "CreatedByUser")
+                        .WithMany()
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("AssignedToUser");
+
+                    b.Navigation("CreatedByUser");
                 });
 
             modelBuilder.Entity("small_todo_application.Models.Register", b =>

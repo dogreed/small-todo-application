@@ -96,6 +96,10 @@ namespace small_todo_application.Controllers
 						{
 							return RedirectToAction("Dashboard", "User");
 						}
+						else if (user.Role == "Manager")
+						{
+							return RedirectToAction("Dashboard", "Manager");
+						}
 					}
 				}
 

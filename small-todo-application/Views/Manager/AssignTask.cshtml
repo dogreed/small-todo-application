@@ -1,0 +1,57 @@
+﻿@model small_todo_application.ViewModel.AssignTaskViewModel
+@{
+    ViewData["Title"] = "AssignTask";
+    Layout = "~/Views/Shared/_ManagerLayout.cshtml";
+}
+
+
+@if (Model?.AssignableUsers == null)
+{
+    <div class="alert alert-danger">Failed to load user data.</div>
+}
+
+<form asp-action="AssignTask" method="post">
+    <input type="hidden" asp-antiforgery="true" />
+
+    <div asp-validation-summary="All" class="text-danger"></div>
+
+    <div class="form-group">
+        <label asp-for="Task.Title"></label>
+        <input asp-for="Task.Title" class="form-control" />
+        <span asp-validation-for="Task.Title" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Task.Description"></label>
+        <textarea asp-for="Task.Description" class="form-control"></textarea>
+        <span asp-validation-for="Task.Description" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Task.AssignedToUserId">Assign To User</label>
+        @if (Model.AssignableUsers != null && Model.AssignableUsers.Any())
+        {
+            <select asp-for="Task.AssignedToUserId" class="form-control" required>
+                <option value="">-- Select a User --</option>
+                @foreach (var user in Model.AssignableUsers)
+                {
+                    <option value="@user.Id">@user.Name</option>
+                }
+            </select>
+        }
+        else
+        {
+            <div class="alert alert-warning">No users available for assignment.</div>
+        }
+        <span asp-validation-for="Task.AssignedToUserId" class="text-danger"></span>
+    </div>
+   
+
+  
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+

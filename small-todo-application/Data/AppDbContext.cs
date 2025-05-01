@@ -13,6 +13,7 @@ namespace small_todo_application.Data
 		public DbSet<TaskList> TaskList { get; set; }
 
 		// In AppDbContext.cs
-	
+		
+
 	}
 }
