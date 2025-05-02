@@ -182,6 +182,96 @@ namespace small_todo_application.Controllers
 			return RedirectToAction("TaskList");
 		}
 
+		//Now Adding Blog Features in admin Page 
+
+		public IActionResult CreateBlog()
+		{
+			return View();
+		}
+		[HttpPost]
+		public async Task<IActionResult> CreateBlog(BlogPost post, IFormFile imageFile)
+		{
+			var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+			post.CreatedByUserId = currentUserId;
+
+			if (imageFile != null && imageFile.Length > 0)
+			{
+				using var ms = new MemoryStream();
+				await imageFile.CopyToAsync(ms);
+				post.ImageData = ms.ToArray();
+				post.ImageMimeType = imageFile.ContentType;
+			}
+
+			if (ModelState.IsValid)
+			{
+				_context.Add(post);
+
+				await _context.SaveChangesAsync();
+				return RedirectToAction(nameof(CreateBlog));
+			}
+
+			return View(post);
+		}
+
+
+		//This code doestn't have filter and shows every record 
+		//public IActionResult BlogList() 
+		//{
+		//	var blogs = _context.BlogPosts
+		//		.OrderByDescending(b => b.CreatedAt)
+		//		.ToList();
+
+		//	return View(blogs);
+		//}
+		public IActionResult BlogList() //This Filter Blog according to id who posted 
+		{
+			var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+			var blogs = _context.BlogPosts
+				.Where(b => b.CreatedByUserId == currentUserId)
+				.OrderByDescending(b => b.CreatedAt)
+				.ToList();
+
+			return View(blogs);
+		}
+
+		public IActionResult EditBlog(int id)
+		{
+			var post = _context.BlogPosts.Find(id);
+			if (post == null) return NotFound();
+			return View(post);
+		}
+		[HttpPost]
+		public async Task<IActionResult> EditBlog(BlogPost post, IFormFile imageFile)
+		{
+			var existing = _context.BlogPosts.Find(post.Id);
+			if (existing == null) return NotFound();
+
+			existing.Title = post.Title;
+			existing.Content = post.Content;
+
+			if (imageFile != null && imageFile.Length > 0)
+			{
+				using var ms = new MemoryStream();
+				await imageFile.CopyToAsync(ms);
+				existing.ImageData = ms.ToArray();
+				existing.ImageMimeType = imageFile.ContentType;
+			}
+
+			await _context.SaveChangesAsync();
+			return RedirectToAction(nameof(BlogList));
+		}
+		[HttpPost]
+		public IActionResult DeleteBlog(int id)
+		{
+			var post = _context.BlogPosts.Find(id);
+			if (post == null) return NotFound();
+
+			_context.BlogPosts.Remove(post);
+			_context.SaveChanges();
+
+			return RedirectToAction(nameof(BlogList));
+		}
 
 	}
 

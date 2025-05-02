@@ -1,0 +1,45 @@
+﻿@model BlogPost
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>@Model.Title</h2>
+<p><small>Posted on @Model.CreatedAt.ToString("dd MMM yyyy")</small></p>
+
+@if (Model.ImageData != null)
+{
+    <div class="blog-image-container">
+        <img src="data:@Model.ImageMimeType;base64,@Convert.ToBase64String(Model.ImageData)"
+             class="blog-content-image"
+             alt="@Model.Title" />
+    </div>
+}
+
+<div class="blog-content">
+    @Html.Raw(Model.Content)
+</div>
+
+<style>
+    /* Container to center the image */
+    .blog-image-container {
+        text-align: center;
+        margin: 20px 0;
+    }
+
+    /* Image styling */
+    .blog-content-image {
+        max-width: 600px; /* Optimal reading width */
+        width: 100%; /* Responsive */
+        height: auto; /* Maintain aspect ratio */
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    /* Responsive adjustments */
+    @@media (max-width: 768px) {
+        .blog-content-image {
+            max-width: 100%;
+        }
+    }
+</style>
