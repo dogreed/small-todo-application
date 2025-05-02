@@ -66,38 +66,29 @@ namespace small_todo_application.Controllers
 		[ValidateAntiForgeryToken]
 		public async Task<IActionResult> AssignTask(AssignTaskViewModel model)
 		{
-			// Manually validate required fields
-			if (model.Task.AssignedToUserId == 0) // 0 is default for int
-			{
-				ModelState.AddModelError("Task.AssignedToUserId", "Please select a user");
-			}
-
 			if (ModelState.IsValid)
 			{
-				try
-				{
-					// Create new task with only necessary fields
-					var task = new TaskList
-					{
-						Title = model.Task.Title,
-						Description = model.Task.Description,
-						AssignedToUserId = model.Task.AssignedToUserId,
-						CreatedAt = DateTime.Now
-					};
+				// Get current user ID from auth context
+				var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 
-					_context.TaskList.Add(task);
-					await _context.SaveChangesAsync();
-
-					TempData["SuccessMessage"] = "Task Assigned Successfully!";
-					return RedirectToAction("AssignTask");
-				}
-				catch (Exception ex)
+				// Create task with auto-set creator ID
+				var task = new TaskList
 				{
-					ModelState.AddModelError("", "Error saving task: " + ex.Message);
-				}
+					Title = model.Task.Title,
+					Description = model.Task.Description,
+					AssignedToUserId = model.Task.AssignedToUserId,
+					CreatedByUserId = currentUserId, // Auto-set here
+					CreatedAt = DateTime.Now,
+					Status = "Not Started"
+				};
+
+				_context.TaskList.Add(task);
+				await _context.SaveChangesAsync();
+
+				return RedirectToAction("AssignTask");
 			}
 
-			// Repopulate users
+			// Repopulate dropdowns if validation fails
 			model.AssignableUsers = await _context.Registers.ToListAsync();
 			return View(model);
 		}
@@ -108,7 +99,14 @@ namespace small_todo_application.Controllers
 		[HttpGet]
 		public async Task<IActionResult> TaskList()
 		{
-			var tasks = await _context.TaskList.Include(t => t.AssignedToUser).ToListAsync();
+			var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+
+			// 2. Filter tasks assigned to this user
+			var tasks = await _context.TaskList
+				.Include(t => t.AssignedToUser)  // Still include user details
+				.Where(t => t.CreatedByUserId == currentUserId)  // 👈 Key filter to see whic id submitted 
+				.ToListAsync();
+
 			return View(tasks);
 		}
 

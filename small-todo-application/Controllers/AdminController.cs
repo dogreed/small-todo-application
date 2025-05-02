@@ -89,6 +89,7 @@ namespace small_todo_application.Controllers
 
 			if (ModelState.IsValid)
 			{
+				var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
 				try
 				{
 					// Create new task with only necessary fields
@@ -97,6 +98,7 @@ namespace small_todo_application.Controllers
 						Title = model.Task.Title,
 						Description = model.Task.Description,
 						AssignedToUserId = model.Task.AssignedToUserId,
+						CreatedByUserId = currentUserId,
 						CreatedAt = DateTime.Now
 					};
 

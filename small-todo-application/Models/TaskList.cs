@@ -12,6 +12,7 @@ namespace small_todo_application.Models
 		public string Title { get; set; }
 
 		public string Description { get; set; }
+		public int CreatedByUserId { get; set; }
 
 		[Required(ErrorMessage = "Please select a user to assign the task to")]
 		[Display(Name = "Assigned User")]
