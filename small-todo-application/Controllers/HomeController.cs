@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using small_todo_application.Data;
 using small_todo_application.Models;
+using small_todo_application.ViewModel;
 
 namespace small_todo_application.Controllers;
 
@@ -26,11 +27,21 @@ public class HomeController : Controller
     {
         return View();
     }
-	public IActionResult Blog()
+
+	
+
+
+	public IActionResult Blog(int page = 1)
 	{
-		var posts = _context.BlogPosts.OrderByDescending(p => p.CreatedAt).ToList();
-		return View(posts);
+		int pageSize = 3; // Or make it configurable
+		var posts = _context.BlogPosts
+			.OrderByDescending(p => p.CreatedAt);
+
+		var paginatedPosts = PaginatedList<BlogPost>.Create(posts, page, pageSize);
+
+		return View(paginatedPosts);
 	}
+
 	public IActionResult Details(int id)
 	{
 		var post = _context.BlogPosts.Find(id);

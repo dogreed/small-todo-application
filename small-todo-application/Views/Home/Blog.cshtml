@@ -1,4 +1,6 @@
-﻿@model List<BlogPost>
+﻿@using small_todo_application.ViewModel @* callin from view mode Paginated list *@
+@model PaginatedList<BlogPost>
+@* List + pagination show we are using in this way if only need list we can add list *@
 @{
     ViewData["Title"] = "Blog";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -41,6 +43,53 @@
             </div>
         }
     </div>
+    @* This code is for pagination  *@
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            @if (Model.HasPreviousPage)
+            {
+                <li class="page-item">
+                    <a class="page-link" asp-action="Blog" asp-route-page="@(Model.PageIndex - 1)">Previous</a>
+                </li>
+            }
+            else
+            {
+                <li class="page-item disabled">
+                    <span class="page-link">Previous</span>
+                </li>
+            }
+
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                if (i == Model.PageIndex)
+                {
+                    <li class="page-item active">
+                        <span class="page-link">@i</span>
+                    </li>
+                }
+                else
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-action="Blog" asp-route-page="@i">@i</a>
+                    </li>
+                }
+            }
+
+            @if (Model.HasNextPage)
+            {
+                <li class="page-item">
+                    <a class="page-link" asp-action="Blog" asp-route-page="@(Model.PageIndex + 1)">Next</a>
+                </li>
+            }
+            else
+            {
+                <li class="page-item disabled">
+                    <span class="page-link">Next</span>
+                </li>
+            }
+        </ul>
+    </nav>
+
 </div>
 
 <style>
@@ -79,4 +128,18 @@
         z-index: 1;
         content: "";
     }
+
+    .pagination .page-item.active .page-link {
+        background-color: #007bff;
+        border-color: #007bff;
+        color: white;
+    }
+
+    .pagination .page-link {
+        color: #007bff;
+    }
+
+        .pagination .page-link:hover {
+            color: #0056b3;
+        }
 </style>
