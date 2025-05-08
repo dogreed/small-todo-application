@@ -89,7 +89,7 @@ namespace small_todo_application.Controllers
 
 			if (ModelState.IsValid)
 			{
-				var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+				var currentUserId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)); //with this it knows role 
 				try
 				{
 					// Create new task with only necessary fields

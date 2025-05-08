@@ -28,19 +28,38 @@ public class HomeController : Controller
         return View();
     }
 
-	
-
-
-	public IActionResult Blog(int page = 1)
+	public IActionResult Blog(string searchString, int page = 1)
 	{
-		int pageSize = 3; // Or make it configurable
-		var posts = _context.BlogPosts
-			.OrderByDescending(p => p.CreatedAt);
+		int pageSize = 3;
+
+		var posts = _context.BlogPosts.AsQueryable();
+
+		if (!string.IsNullOrEmpty(searchString))
+		{
+			posts = posts.Where(p => p.Title.Contains(searchString) || p.Content.Contains(searchString));
+		}
+
+		posts = posts.OrderByDescending(p => p.CreatedAt);
 
 		var paginatedPosts = PaginatedList<BlogPost>.Create(posts, page, pageSize);
 
+		ViewData["CurrentFilter"] = searchString; // So we can keep the value in the search box
+
 		return View(paginatedPosts);
 	}
+
+
+
+	//public IActionResult Blog(int page = 1) for pagination only
+	//{
+	//	int pageSize = 3; // Or make it configurable
+	//	var posts = _context.BlogPosts
+	//		.OrderByDescending(p => p.CreatedAt);
+
+	//	var paginatedPosts = PaginatedList<BlogPost>.Create(posts, page, pageSize);
+
+	//	return View(paginatedPosts);
+	//}
 
 	public IActionResult Details(int id)
 	{
