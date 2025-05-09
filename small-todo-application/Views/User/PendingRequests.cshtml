@@ -1,0 +1,78 @@
+﻿@model IEnumerable<small_todo_application.Models.Friendship>
+@{
+    ViewData["Title"] = "Pending Friend Requests";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">Pending Friend Requests</h2>
+        <span class="badge bg-primary">@Model.Count() requests</span>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            You have no pending friend requests.
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var request in Model)
+            {
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card request-card h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="avatar-placeholder bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3">
+                                    @request.User.Name.Substring(0, 1).ToUpper()
+                                </div>
+                                <h5 class="card-title mb-0">@request.User.Name</h5>
+                            </div>
+
+                            <p class="text-muted mb-4">Sent you a friend request</p>
+
+                            <form method="post" action="@Url.Action("RespondToFriendRequest", "User")" class="d-flex gap-2">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="friendshipId" value="@request.Id" />
+
+                                <button type="submit" name="accept" value="true" class="btn btn-success flex-grow-1">
+                                    <i class="fas fa-check me-2"></i>Accept
+                                </button>
+
+                                <button type="submit" name="accept" value="false" class="btn btn-outline-danger flex-grow-1">
+                                    <i class="fas fa-times me-2"></i>Reject
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<style>
+    .request-card {
+        border-radius: 10px;
+        border-left: 4px solid var(--bs-primary);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        transition: transform 0.2s ease;
+    }
+
+        .request-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+    .avatar-placeholder {
+        width: 40px;
+        height: 40px;
+        font-weight: bold;
+    }
+
+    .btn-success {
+        min-width: 100px;
+    }
+</style>

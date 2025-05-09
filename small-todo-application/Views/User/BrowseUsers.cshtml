@@ -1,0 +1,67 @@
+﻿@model IEnumerable<small_todo_application.Models.Register>
+@{
+    ViewData["Title"] = "Browse Users";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+    var friendIds = ViewBag.FriendIds as List<int> ?? new List<int>();
+    var pendingFriendIds = ViewBag.PendingFriendIds as List<int> ?? new List<int>();
+}
+
+<div class="container mt-4">
+    <h1 class="mb-4">Browse Users</h1>
+
+    <div class="row">
+        @foreach (var user in Model)
+        {
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card user-card h-100">
+                    <div class="card-body d-flex flex-column">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="avatar-placeholder bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3">
+                                @user.Name.Substring(0, 1).ToUpper()
+                            </div>
+                            <h5 class="card-title mb-0">@user.Name</h5>
+                        </div>
+
+                        @if (friendIds.Contains(user.Id))
+                        {
+                            <div class="text-success fw-bold mt-auto">Already Friend</div>
+                        }
+                        else if (pendingFriendIds.Contains(user.Id))
+                        {
+                            <div class="text-warning fw-bold mt-auto">Pending Request</div>
+                        }
+                        else
+                        {
+                            <form method="post" action="@Url.Action("SendFriendRequest", "User")" class="mt-auto">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="friendId" value="@user.Id" />
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-user-plus me-2"></i>Send Friend Request
+                                </button>
+                            </form>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .user-card {
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .user-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+    .avatar-placeholder {
+        width: 40px;
+        height: 40px;
+        font-weight: bold;
+    }
+</style>

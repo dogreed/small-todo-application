@@ -25,6 +25,11 @@ namespace small_todo_application.Models
 		[Compare("Password", ErrorMessage = "Passwords do not match")]
 		public string PasswordConfirmed { get; set; }
 		public ICollection<TaskList>? AssignedTasks { get; set; } 
-		public string Role { get; set; } = "User"; 
+		public string Role { get; set; } = "User";
+
+		public ICollection<Friendship> Friends { get; set; } = new List<Friendship>();
+
+		
+
 	}
 }

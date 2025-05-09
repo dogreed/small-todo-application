@@ -1,0 +1,108 @@
+﻿@model IEnumerable<small_todo_application.Models.Register>
+@{
+    ViewData["Title"] = "Friend List";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+<style>
+    .friend-card {
+        border-radius: 10px;
+        border-left: 4px solid var(--bs-success);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        transition: all 0.2s ease;
+    }
+
+        .friend-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+    .avatar-placeholder {
+        width: 48px;
+        height: 48px;
+        font-size: 1.25rem;
+        font-weight: bold;
+    }
+
+    .text-muted {
+        font-size: 0.85rem;
+    }
+</style>
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">Friend List</h1>
+        <span class="badge bg-primary">@Model.Count() friends</span>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            You don't have any friends yet. Start by browsing users and sending friend requests!
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var friend in Model)
+            {
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card friend-card h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="avatar-placeholder bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3">
+                                    @friend.Name.Substring(0, 1).ToUpper()
+                                </div>
+                                <div>
+                                    <h5 class="card-title mb-0">@friend.Name</h5>
+                                    <small class="text-muted">@friend.Email</small>
+                                </div>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <a href="#" class="btn btn-outline-primary btn-sm flex-grow-1">
+                                    <i class="fas fa-envelope me-2"></i>Message
+                                </a>
+                                <button type="button"
+                                        class="btn btn-outline-danger btn-sm w-100 remove-friend-btn"
+                                        data-friend-id="@friend.Id">
+                                    <i class="fas fa-user-minus me-2"></i>Remove
+                                </button>
+                                <form method="post"
+                                      action="@Url.Action("RemoveFriend", "User")"
+                                      class="remove-friend-form d-none">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="friendId" value="@friend.Id" />
+                                </form>
+
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+<script>
+    document.querySelectorAll('.remove-friend-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            const friendId = this.dataset.friendId;
+            const form = this.closest('.card').querySelector('.remove-friend-form');
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You are about to unfriend this user.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, unfriend'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        });
+    });
+</script>
+
