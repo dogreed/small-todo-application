@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using small_todo_application.Data;
+
 using small_todo_application.Models;
 using small_todo_application.ViewModel;
 using System.Security.Claims;
@@ -13,7 +15,7 @@ namespace small_todo_application.Controllers
 	public class UserController : Controller
     {
 		private readonly AppDbContext _context;
-
+		
 		public UserController(AppDbContext context)
 		{
 			_context = context;
@@ -57,6 +59,8 @@ namespace small_todo_application.Controllers
 			TempData["SuccessMessage"] = "Task status updated!";
 			return RedirectToAction("ViewTask");
 		}
+
+
 
 	}
 }

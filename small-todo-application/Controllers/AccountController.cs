@@ -79,6 +79,9 @@ namespace small_todo_application.Controllers
 					new Claim(ClaimTypes.Name, user.Name),
 					new Claim(ClaimTypes.Email, user.Email),
 					new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+					//This role identifies will help which role the user will claim
+			
+
 					new Claim(ClaimTypes.Role, user.Role)
 				};
 						// 👈 add this!

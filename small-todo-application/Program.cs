@@ -1,6 +1,10 @@
 using small_todo_application.Data;
 using Microsoft.EntityFrameworkCore;
 
+using Microsoft.AspNetCore.SignalR;
+using small_todo_application.Hubs;
+
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -25,6 +29,12 @@ builder.Services.AddSession(options =>
 	options.Cookie.IsEssential = true;
 });
 
+
+
+// for message
+builder.Services.AddSignalR();
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -45,6 +55,11 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();
+
+app.MapHub<AdminChatHub>("/adminChatHub");
+
+
+
 
 app.MapControllerRoute(
     name: "default",

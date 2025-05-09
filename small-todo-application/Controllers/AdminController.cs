@@ -2,8 +2,10 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using small_todo_application.Data;
+
 using small_todo_application.Models;
 using small_todo_application.ViewModel;
 using System.Security.Claims;
@@ -15,10 +17,11 @@ namespace small_todo_application.Controllers
 	public class AdminController : Controller
 	{
 		private readonly AppDbContext _context;
-
+	
 		public AdminController(AppDbContext context)
 		{
 			_context = context;
+			
 		}
 		//.............Here is For admin dashboard..............
 		public IActionResult Dashboard(int? editId = null)
@@ -105,6 +108,7 @@ namespace small_todo_application.Controllers
 					_context.TaskList.Add(task);
 					await _context.SaveChangesAsync();
 
+
 					TempData["SuccessMessage"] = "Task Assigned Successfully!";
 					return RedirectToAction("AssignTask");
 				}
@@ -119,7 +123,14 @@ namespace small_todo_application.Controllers
 			return View(model);
 		}
 
-		//Now here is the code to edit, delete task in differnt page,?
+		//Now here is the code to edit, delete task in different page,?
+
+
+
+
+
+
+
 
 		// Show all assigned tasks
 		[HttpGet]
@@ -214,7 +225,7 @@ namespace small_todo_application.Controllers
 		}
 
 
-		//This code doestn't have filter and shows every record 
+		//This code doesn't have filter and shows every record 
 		//public IActionResult BlogList() 
 		//{
 		//	var blogs = _context.BlogPosts
@@ -273,6 +284,12 @@ namespace small_todo_application.Controllers
 			return RedirectToAction(nameof(BlogList));
 		}
 
+		public IActionResult Chat()
+		{
+			return View();
+		}
+
+	
 	}
 
 }

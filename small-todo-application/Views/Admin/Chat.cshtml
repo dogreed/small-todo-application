@@ -1,0 +1,61 @@
+﻿
+@{
+    ViewData["Title"] = "Chat";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container mt-5">
+    <h3>Admin Chat</h3>
+   
+
+    
+    @inject small_todo_application.Data.AppDbContext _context
+    @{
+        var messages = _context.ChatMessages
+        .OrderBy(m => m.Timestamp)
+        .ToList();
+    }
+    <div id="chatBox" class="mb-3 p-2" style="height: 300px; overflow-y: auto; border: 1px solid #ccc;">
+        @foreach (var msg in messages)
+        {
+            <div><strong>@msg.Sender:</strong> @msg.Message</div>
+        }
+    </div>
+    
+    <div class="input-group mb-3">
+        <input type="text" id="sender" class="form-control" placeholder="Your name (admin)">
+        <input type="text" id="message" class="form-control" placeholder="Enter message">
+        <button class="btn btn-primary" onclick="sendMessage()">Send</button>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js"></script>
+
+<script>
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/adminChatHub")
+        .build();
+
+    connection.on("ReceiveMessage", function (sender, message) {
+        const chatBox = document.getElementById("chatBox");
+        const msg = document.createElement("div");
+        msg.innerHTML = `<strong>${sender}:</strong> ${message}`;
+        chatBox.appendChild(msg);
+        chatBox.scrollTop = chatBox.scrollHeight; // Auto scroll to bottom
+    });
+
+    connection.start().catch(err => {
+        console.error("SignalR connection failed:", err.toString());
+        alert("Unable to connect to chat. Are you an authorized admin?");
+    });
+
+    function sendMessage() {
+        const sender = document.getElementById("sender").value.trim();
+        const message = document.getElementById("message").value.trim();
+        if (!sender || !message) return alert("Both sender and message are required.");
+        connection.invoke("SendMessage", sender, message).catch(err => console.error(err.toString()));
+        document.getElementById("message").value = '';
+    }
+</script>
+
+

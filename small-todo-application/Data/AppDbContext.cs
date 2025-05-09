@@ -15,6 +15,9 @@ namespace small_todo_application.Data
 
 		public DbSet<BlogPost> BlogPosts { get; set; }
 
+		public DbSet<ChatMessage> ChatMessages { get; set; }
+
+
 		// In AppDbContext.cs
 
 
