@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 using Microsoft.AspNetCore.SignalR;
 using small_todo_application.Hubs;
+using small_todo_application;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -33,7 +34,7 @@ builder.Services.AddSession(options =>
 
 // for message
 builder.Services.AddSignalR();
-
+builder.Services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
 
 var app = builder.Build();
 
@@ -57,6 +58,8 @@ app.UseAuthorization();
 app.MapStaticAssets();
 
 app.MapHub<AdminChatHub>("/adminChatHub");
+app.MapHub<UserChatHub>("/userChatHub");
+
 
 
 

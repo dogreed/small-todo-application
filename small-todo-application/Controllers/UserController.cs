@@ -200,6 +200,72 @@ namespace small_todo_application.Controllers
 			return RedirectToAction("FriendList");
 		}
 
+		public IActionResult Chat(int friendId)
+		{
+			var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);  // Get the current user ID
+
+			var friend = _context.Registers.FirstOrDefault(u => u.Id == friendId); // Retrieve the friend details
+
+			if (friend == null)
+			{
+				return NotFound();
+			}
+
+			var messages = _context.PrivateMessages
+				.Where(m => (m.SenderId == userId && m.ReceiverId == friendId) || (m.SenderId == friendId && m.ReceiverId == userId))
+				.OrderBy(m => m.SentAt)
+				.ToList();
+
+			var viewModel = new ChatViewModel
+			{
+				FriendId = friendId,
+				FriendName = friend.Name,
+				Messages = messages
+			};
+
+			return View(viewModel);
+		}
+
+
+		// This method should fetch messages between the current user and the friend
+		private List<PrivateMessage> GetMessages(int senderId, int receiverId)
+		{
+			return _context.PrivateMessages
+						   .Where(m => (m.SenderId == senderId && m.ReceiverId == receiverId) ||
+									   (m.SenderId == receiverId && m.ReceiverId == senderId))
+						   .OrderBy(m => m.SentAt)
+						   .ToList();
+		}
+
+		private int GetCurrentUserId()
+		{
+			// This should return the current logged-in user's ID
+			// For example, using claims:
+			return int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+		}
+
+		public IActionResult MessageInbox()
+		{
+			var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+			// Get all users this user has exchanged messages with
+			var conversations = _context.PrivateMessages
+				.Where(m => m.SenderId == userId || m.ReceiverId == userId)
+				.GroupBy(m => m.SenderId == userId ? m.ReceiverId : m.SenderId)
+				.Select(g => new MessageListViewModel
+				{
+					FriendId = g.Key,
+					FriendName = _context.Registers.Where(r => r.Id == g.Key).Select(r => r.Name).FirstOrDefault(),
+					LastMessage = g.OrderByDescending(m => m.SentAt).FirstOrDefault().Message,
+					LastMessageTime = g.OrderByDescending(m => m.SentAt).FirstOrDefault().SentAt
+				})
+				.OrderByDescending(m => m.LastMessageTime)
+				.ToList();
+
+			return View(conversations);
+		}
 
 	}
+
 }
+

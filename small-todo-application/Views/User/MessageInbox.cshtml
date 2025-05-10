@@ -1,0 +1,82 @@
+﻿@model IEnumerable<small_todo_application.ViewModel.MessageListViewModel>
+@{
+    ViewData["Title"] = "MessageInbox";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+
+
+
+<style>
+    .message-card {
+        transition: background-color 0.2s ease;
+        cursor: pointer;
+        border: none;
+        border-bottom: 1px solid #e9ecef;
+        padding: 15px;
+        border-radius: 0;
+    }
+
+    .message-card:hover {
+        background-color: #f8f9fa;
+    }
+
+    .message-avatar {
+        width: 50px;
+        height: 50px;
+        background-color: #0d6efd;
+        color: white;
+        font-weight: bold;
+        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+    }
+
+    .message-content {
+        flex-grow: 1;
+        margin-left: 15px;
+    }
+
+    .message-time {
+        font-size: 0.85rem;
+        color: gray;
+    }
+
+    .text-truncate {
+        max-width: 250px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+</style>
+
+<div class="container mt-4">
+    <h2 class="mb-4">Your Conversations</h2>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">You haven't messaged anyone yet.</div>
+    }
+    else
+    {
+        <div class="list-group">
+            @foreach (var convo in Model)
+            {
+                <a href="@Url.Action("Chat", "User", new { friendId = convo.FriendId })" class="list-group-item list-group-item-action message-card d-flex align-items-center">
+                    <div class="message-avatar">
+                        @convo.FriendName.Substring(0, 1).ToUpper()
+                    </div>
+                    <div class="message-content">
+                        <div class="fw-bold">@convo.FriendName</div>
+                        <div class="text-muted text-truncate">@convo.LastMessage</div>
+                    </div>
+                    <div class="message-time text-end">
+                        @convo.LastMessageTime.ToShortTimeString()
+                    </div>
+                </a>
+            }
+        </div>
+    }
+</div>
